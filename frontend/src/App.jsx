@@ -173,7 +173,7 @@ export default function App() {
               id="username"
               value={draftUsername}
               onChange={(event) => setDraftUsername(event.target.value)}
-              placeholder="e.g. Bishwajeet"
+              placeholder="Ranjan"
               maxLength={30}
               autoFocus
             />
