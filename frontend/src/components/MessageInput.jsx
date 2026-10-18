@@ -21,7 +21,9 @@ export default function MessageInput({ onSend, onTypingStart, onTypingStop, disa
     const value = text.trim();
     if (!value || disabled) return;
 
-    await onSend(value);
+    const sent = await onSend(value);
+    if (!sent) return;
+
     setText("");
     onTypingStop();
   }
