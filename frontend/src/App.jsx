@@ -86,6 +86,9 @@ export default function App() {
       socket.off("message:new", handleMessage);
       socket.off("user:count", handleCount);
       socket.off("typing:update", handleTyping);
+      socket.off("socket:error", handleSocketError);
+      clearTimeout(typingTimerRef.current);
+      typingTimerRef.current = null;
       socket.disconnect();
     };
   }, [username]);
@@ -127,8 +130,10 @@ export default function App() {
     try {
       setError("");
       await sendMessage(username, text);
+      return true;
     } catch (err) {
       setError(err.message);
+      return false;
     }
   }
 
@@ -140,11 +145,13 @@ export default function App() {
     clearTimeout(typingTimerRef.current);
     typingTimerRef.current = setTimeout(() => {
       socket.emit("typing:stop");
+      typingTimerRef.current = null;
     }, 1200);
   }
 
   function handleTypingStop() {
     clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = null;
     if (socket.connected) socket.emit("typing:stop");
   }
 
