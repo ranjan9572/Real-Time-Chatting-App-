@@ -126,7 +126,29 @@ Open the app in two browser tabs, join with different usernames, and send a mess
 | `GET` | `/api/messages?limit=100` | Retrieve recent messages |
 | `POST` | `/api/messages` | Validate and save a message, then broadcast it |
 
-Example request body:
+**Example: fetch recent messages**
+
+```http
+GET /api/messages?limit=100
+```
+
+A successful response contains the messages returned by the API. A message has this general shape:
+
+```json
+{
+  "id": "message-id",
+  "username": "Alice",
+  "text": "Hello everyone!",
+  "createdAt": "2026-08-09T15:00:00.000Z"
+}
+```
+
+**Example: send a message**
+
+```http
+POST /api/messages
+Content-Type: application/json
+```
 
 ```json
 {
@@ -135,6 +157,8 @@ Example request body:
 }
 ```
 
+The backend validates the request, saves the message, and then emits `message:new` to connected clients. Exact response wrappers and error messages are determined by the API implementation.
+
 ## 🔄 How It Works
 
 1. The user joins the chat with a username.
@@ -142,6 +166,43 @@ Example request body:
 3. When a user sends a message, the backend validates and saves it.
 4. After the save succeeds, Socket.IO broadcasts the new message to connected clients.
 5. Socket events also update typing indicators and online presence.
+
+## 🔌 Socket.IO Events
+
+Socket.IO carries real-time updates between connected clients and the backend. The app uses events for joining, online presence, message delivery, and typing status.
+
+| Direction | Event | Purpose |
+|---|---|---|
+| Client → Server | `user:join` | Register a username for the chat session |
+| Client → Server | `typing:start` | Notify the server that a user started typing |
+| Client → Server | `typing:stop` | Notify the server that a user stopped typing |
+| Server → Client | `user:count` | Update the number of connected users |
+| Server → Client | `user:list` | Share the current online user list |
+| Server → Client | `user:joined` | Announce a user joining |
+| Server → Client | `user:left` | Announce a user leaving |
+| Server → Client | `message:new` | Deliver a newly saved message |
+| Server → Client | `typing:update` | Update typing status |
+| Server → Client | `socket:error` | Report a socket-level error |
+
+## 🧠 Design Decisions
+
+- **REST API for history and persistence:** HTTP endpoints load recent messages and create new ones.
+- **Socket.IO for live updates:** connected clients receive new messages and presence/typing changes without polling.
+- **One message creation path:** the frontend posts a message to the API; the backend saves it before broadcasting `message:new`. This avoids broadcasting a message when persistence fails.
+- **Reusable React components:** the interface separates the chat header, message display, and message input into focused components.
+- **Environment-based configuration:** frontend API and socket URLs are configured through environment variables instead of hard-coded deployment URLs.
+- **Simple JSON storage:** the project is easy to run locally without installing a separate database. For production use, a managed database and persistent storage are recommended.
+
+## 🧪 Manual Testing Checklist
+
+Use two browser tabs or windows with different usernames:
+
+1. Confirm both users can join the chat.
+2. Send a message from one tab and verify it appears in the other immediately.
+3. Refresh the second tab and verify recent messages load again.
+4. Start and stop typing in one tab and check the typing indicator in the other.
+5. Close one tab and verify the online count updates.
+6. Try an empty message and confirm it is handled safely.
 
 ## 🗂️ Project Structure
 
