@@ -8,6 +8,8 @@
 Built with React, Node.js, Express, and Socket.IO.
 
 <p>
+  <a href="https://real-time-chatting-app-1-1ihg.onrender.com"><strong>🚀 Live Demo</strong></a>
+  &nbsp; · &nbsp;
   <a href="https://real-time-chatting-app-krtt.onrender.com/health"><strong>🩺 Backend Health</strong></a>
   &nbsp; · &nbsp;
   <a href="https://github.com/ranjan9572/Real-Time-Chatting-App-"><strong>📂 Source Code</strong></a>
@@ -25,7 +27,7 @@ Built with React, Node.js, Express, and Socket.IO.
 
 ## ✨ Overview
 
-Real-Time Chat App is a responsive, browser-based chat application where users join with a username and exchange messages instantly. It combines a **REST API** for message history and persistence with **Socket.IO** for live message delivery and presence updates. The currently linked Render service is the **backend API**; its root URL does not serve the React interface, so opening it directly returns `Route not found`. The backend health endpoint is linked above. Add the frontend’s public URL here once the frontend is deployed.
+Real-Time Chat App is a responsive, browser-based chat application where users join with a username and exchange messages instantly. It combines a **REST API** for message history and persistence with **Socket.IO** for live message delivery and presence updates. The frontend is deployed on Render and can be opened using the **Live Demo** link above. The backend health endpoint is also linked above for a quick service check.
 
 ## 🌟 Features
 
@@ -177,6 +179,6 @@ Example request body:
 
 **Built by [Ranjan Kumar Yadav](https://github.com/ranjan9572)**
 
-[Backend Health](https://real-time-chatting-app-krtt.onrender.com/health) · [GitHub Repository](https://github.com/ranjan9572/Real-Time-Chatting-App-)
+[🚀 Live Demo](https://real-time-chatting-app-1-1ihg.onrender.com) · [🩺 Backend Health](https://real-time-chatting-app-krtt.onrender.com/health) · [GitHub Repository](https://github.com/ranjan9572/Real-Time-Chatting-App-)
 
 </div>
