@@ -10,8 +10,6 @@ Built with React, Node.js, Express, and Socket.IO.
 <p>
   <a href="https://real-time-chatting-app-1-1ihg.onrender.com"><strong>🚀 Live Demo</strong></a>
   &nbsp; · &nbsp;
-  <a href="https://real-time-chatting-app-krtt.onrender.com/health"><strong>🩺 Backend Health</strong></a>
-  &nbsp; · &nbsp;
   <a href="https://github.com/ranjan9572/Real-Time-Chatting-App-"><strong>📂 Source Code</strong></a>
 </p>
 
@@ -179,6 +177,6 @@ Example request body:
 
 **Built by [Ranjan Kumar Yadav](https://github.com/ranjan9572)**
 
-[🚀 Live Demo](https://real-time-chatting-app-1-1ihg.onrender.com) · [🩺 Backend Health](https://real-time-chatting-app-krtt.onrender.com/health) · [GitHub Repository](https://github.com/ranjan9572/Real-Time-Chatting-App-)
+[🚀 Live Demo](https://real-time-chatting-app-1-1ihg.onrender.com) · [GitHub Repository](https://github.com/ranjan9572/Real-Time-Chatting-App-)
 
 </div>
