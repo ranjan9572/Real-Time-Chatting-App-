@@ -1,45 +1,48 @@
 # Real-Time Chat Application
 
-A full-stack real-time chat application built with **React + Vite** on the frontend and **Node.js + Express + Socket.io** on the backend.
+A full-stack chat application built with **React, Vite, Node.js, Express, and Socket.IO**. Users can join with a username, exchange messages in real time, see online connection counts, and view typing indicators.
+
+**Live Demo:** https://real-time-chatting-app-krtt.onrender.com  
+**Source Code:** https://github.com/ranjan9572/Real-Time-Chatting-App-
 
 ## Features
 
-### Required
-- Send messages
-- Receive messages instantly with Socket.io
-- Fetch previous messages after refresh
-- Message timestamps
-- REST API for sending and fetching messages
-- Socket.io broadcast for real-time delivery
-- Graceful connection/disconnection handling
-- Clean project structure
-- API and Socket error handling
+- **Real-time messaging** using Socket.IO.
+- **Message history** loaded from the REST API when the chat opens.
+- **Message persistence** using a local JSON datastore.
+- **Username-based entry** with the option to change user.
+- **Online user count** and connection status.
+- **Typing indicators** for other connected users.
+- **Message timestamps** and distinct styling for your own messages.
+- **REST API** for fetching and sending messages.
+- **Input validation and error handling** on the API and client.
+- **Responsive interface** with mobile layout tested at approximately 367 × 666 pixels.
 
-### Bonus
-- Dummy username login
-- Typing indicator
-- Online user count/status
-- Message persistence in a local JSON datastore
-- Responsive chat UI
+> **Project scope:** This demo uses a single public chat room and a username rather than production authentication. The JSON file datastore keeps local setup simple; a production deployment should use a managed database and real authentication.
 
-> The JSON datastore is intentionally used to keep setup simple and portable. It can be replaced by MongoDB, PostgreSQL, SQLite, etc. without changing the frontend contract.
+## Tech Stack
+
+| Area | Technologies |
+|---|---|
+| Frontend | React, Vite, JavaScript, CSS |
+| Backend | Node.js, Express |
+| Real-time communication | Socket.IO, socket.io-client |
+| HTTP API | REST, Fetch API |
+| Message storage | JSON file |
+| Deployment | Render |
 
 ## Project Structure
 
 ```text
-realtime-chat-app/
+.
 ├── backend/
 │   ├── data/
 │   │   └── messages.json
 │   ├── src/
 │   │   ├── controllers/
-│   │   │   └── messageController.js
 │   │   ├── routes/
-│   │   │   └── messageRoutes.js
 │   │   ├── services/
-│   │   │   └── messageService.js
 │   │   ├── socket/
-│   │   │   └── socketHandler.js
 │   │   ├── app.js
 │   │   └── server.js
 │   ├── .env.example
@@ -47,34 +50,37 @@ realtime-chat-app/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── ChatHeader.jsx
-│   │   │   ├── MessageBubble.jsx
-│   │   │   └── MessageInput.jsx
 │   │   ├── services/
-│   │   │   ├── api.js
-│   │   │   └── socket.js
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── styles.css
 │   ├── .env.example
-│   ├── index.html
 │   └── package.json
 └── README.md
 ```
 
-## Prerequisites
+## Run Locally
 
-- Node.js 18+
-- npm 9+
+### Prerequisites
 
-## 1. Run the Backend
+- Node.js 18 or newer
+- npm
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/ranjan9572/Real-Time-Chatting-App-.git
+cd Real-Time-Chatting-App-
+```
+
+### 2. Configure and start the backend
 
 ```bash
 cd backend
 npm install
 ```
 
-Copy `.env.example` to `.env`:
+Create a `.env` file in the `backend` directory using `.env.example` as a reference:
 
 ```env
 PORT=5000
@@ -87,182 +93,81 @@ Start the backend:
 npm run dev
 ```
 
-Backend:
-- REST API: `http://localhost:5000/api`
-- Health check: `http://localhost:5000/health`
-- Socket.io: `http://localhost:5000`
+The backend runs at `http://localhost:5000`. The health endpoint is `http://localhost:5000/health`.
 
-For production:
+### 3. Configure and start the frontend
 
-```bash
-npm start
-```
-
-## 2. Run the Frontend
-
-Open another terminal:
+Open a second terminal from the repository root:
 
 ```bash
 cd frontend
 npm install
 ```
 
-Copy `.env.example` to `.env`:
+Create a `.env` file in the `frontend` directory:
 
 ```env
 VITE_API_URL=http://localhost:5000/api
 VITE_SOCKET_URL=http://localhost:5000
 ```
 
-Start:
+Start Vite:
 
 ```bash
 npm run dev
 ```
 
-Open the URL printed by Vite, normally:
+Open the local URL printed by Vite (usually `http://localhost:5173`).
 
-```text
-http://localhost:5173
-```
+### 4. Test real-time chat
 
-Open the app in two browser tabs/windows with different usernames to test real-time chat.
+Open the app in two browser tabs or windows and join with different usernames. Send a message from one tab and confirm it appears in the other. You can also test the typing indicator, online count, and message history after refreshing.
 
 ## REST API
 
-### Health
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Backend health check |
+| `GET` | `/api/messages?limit=100` | Fetch recent messages |
+| `POST` | `/api/messages` | Validate, store, and broadcast a message |
 
-```http
-GET /health
-```
-
-### Fetch chat history
-
-```http
-GET /api/messages?limit=100
-```
-
-Response:
+Example request body for `POST /api/messages`:
 
 ```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "uuid",
-      "username": "Alice",
-      "text": "Hello",
-      "createdAt": "2026-08-09T15:00:00.000Z"
-    }
-  ]
-}
-```
-
-### Send message
-
-```http
-POST /api/messages
-Content-Type: application/json
-
 {
   "username": "Alice",
   "text": "Hello!"
 }
 ```
 
-The backend persists the message and broadcasts:
+The API validates required fields and length limits. Successfully stored messages are broadcast to connected clients using the `message:new` Socket.IO event.
 
-```text
-message:new
-```
+## Socket.IO Events
 
-through Socket.io.
+| Direction | Events |
+|---|---|
+| Client → Server | `user:join`, `typing:start`, `typing:stop` |
+| Server → Client | `user:count`, `user:list`, `user:joined`, `user:left`, `message:new`, `typing:update`, `socket:error` |
 
-## Socket Events
+## Architecture Notes
 
-### Client → Server
+- REST endpoints handle message creation and chat-history retrieval.
+- The backend stores a message before broadcasting it, so failed writes are not broadcast as successful messages.
+- Socket.IO handles live message delivery, typing updates, and online connection counts.
+- The frontend uses reusable components for the chat header, message bubbles, and message input.
+- Frontend service URLs are configurable with environment variables.
 
-- `user:join`
-- `typing:start`
-- `typing:stop`
+## Responsive Testing
 
-### Server → Client
+The mobile layout has been tested at approximately **367 × 666 pixels**. The chat header, messages, message input, **Send** button, and **Change user** control fit within the tested viewport.
 
-- `user:count`
-- `user:list`
-- `user:joined`
-- `user:left`
-- `message:new`
-- `typing:update`
-- `socket:error`
+## Deployment Notes
 
-## Design Decisions
+The application is deployed on Render. The live link is at the top of this README.
 
-1. **REST + Socket.io separation**
-   - REST handles persistence and history.
-   - Socket.io handles real-time events.
-   - This keeps responsibilities clear.
+For a more production-ready version, consider moving message storage from the JSON file to a managed database, adding real authentication and rate limiting, and configuring persistent storage appropriate to the hosting platform.
 
-2. **Single message creation path**
-   - The frontend sends a message through `POST /api/messages`.
-   - The backend saves it first.
-   - Only after successful persistence does the backend emit `message:new`.
-   - This prevents clients from displaying messages that failed to save.
+## Author
 
-3. **Socket.io is mandatory**
-   - No polling or Firebase is used for real-time delivery.
-
-4. **Reusable React components**
-   - Header, message bubble and input are separate components.
-
-5. **Environment variables**
-   - Frontend and backend URLs are configurable without modifying source code.
-
-6. **Simple persistence**
-   - Messages are stored in `backend/data/messages.json`.
-   - This makes the submission runnable immediately without installing a database server.
-
-## Assumptions
-
-- This is a single public chat room.
-- Authentication is intentionally dummy username-based login.
-- There is no password or production identity verification.
-- The JSON datastore is suitable for this assignment/demo, not for high-concurrency production use.
-- The latest 100 messages are loaded initially.
-- A username is stored in browser localStorage.
-
-## Error Handling
-
-- REST validation errors return HTTP 400.
-- Unexpected REST errors return HTTP 500.
-- Socket connection errors are surfaced to the client.
-- Invalid socket events are rejected safely.
-- JSON storage failures are caught and returned as API errors.
-
-## Testing
-
-Recommended manual test:
-
-1. Start backend.
-2. Start frontend.
-3. Open two browser tabs.
-4. Enter different usernames.
-5. Send a message from tab A.
-6. Verify tab B receives it instantly.
-7. Refresh tab B.
-8. Verify the message is still visible.
-9. Start typing in one tab.
-10. Verify the other tab displays the typing indicator.
-11. Close one tab and verify the online count changes.
-
-## Deployment
-
-The backend can be deployed to Render, Railway, Fly.io, or another Node.js host.
-
-For a production deployment:
-- Replace JSON storage with a real database.
-- Configure `CLIENT_URL` to the deployed frontend.
-- Configure `VITE_API_URL` and `VITE_SOCKET_URL` to the deployed backend.
-- Use HTTPS/WSS.
-- Add real authentication and rate limiting.
-
+**Ranjan Kumar Yadav**  
+GitHub: [@ranjan9572](https://github.com/ranjan9572)
